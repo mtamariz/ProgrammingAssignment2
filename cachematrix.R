@@ -1,15 +1,43 @@
-## Put comments here that give an overall description of what your
-## functions do
+## Calculate the inverse of a matrix and cache it, unless the inverse of that matrix
+## has already been calculated and cached, in which case it is retrieved from cache
 
-## Write a short comment describing this function
+
+# MASS contains ginv(), a generalized inverse matrix function 
+install.packages("MASS")
+library(MASS)
+
+
+## makeCacheMatrix() creates a list that contains a function to set and get the 
+##   value of the matrix, and set and get the inverse of the matrix
 
 makeCacheMatrix <- function(x = matrix()) {
-
+      inv <- NULL
+      set <- function(y) {
+            x <<- y
+            inv <<- NULL
+      }
+      get <- function() x
+      setinv <- function(mean) inv <<- mean
+      getinv <- function() inv
+      list(set = set, get = get,
+           setinv = setinv,
+           getinv = getinv)
 }
 
 
-## Write a short comment describing this function
+## cachemean() returns a matrix that is the inverse of 'x' from cache (if it's there) 
+##  or calculates it (if not in cache)
 
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+cachemean <- function(x, ...) {
+      inv <- x$getinv()
+      if(!is.null(inv)) {
+            message("getting cached data")
+            return(inv)
+      }
+      data <- x$get()
+      inv <- ginv(data, ...)
+      x$setinv(inv)
+      inv        
 }
+
+
